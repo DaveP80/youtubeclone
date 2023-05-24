@@ -1,7 +1,7 @@
 header {
     align-items: center;
-    background: var(--primary);
-    border-bottom: 3px solid var(--white);
+    background: red;
+    border-bottom: 3px solid white;
     display: flex;
     padding: 25px 15% 35px;
   }
@@ -23,7 +23,7 @@ header {
   }
   
   header h1 a {
-    color: var(--white);
+    color: white;
     text-decoration: none;
   }
   
@@ -41,18 +41,18 @@ header {
   
   header ul li a {
     color: var(--white);
-    border-bottom: 2px solid var(--white);
+    border-bottom: 2px solid white;
     font-weight: 500;
     padding-bottom: 5px;
     text-decoration: none;
   }
   
   header ul li a:hover {
-    color: var(--black);
-    border-bottom: 2px solid var(--black);
+    color: black;
+    border-bottom: 2px solid black;
   }
   
   .active-link {
-    color: var(--black);
-    border-bottom: 2px solid var(--black);
+    color: gray;
+    border-bottom: 2px solid gray;
   }
