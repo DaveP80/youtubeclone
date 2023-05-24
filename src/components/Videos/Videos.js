@@ -1,7 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import YouTube from 'react-youtube';
-import {v1 as generateId} from 'uuid'
+import { NavLink } from "react-router-dom";
 import './videos.css'
 
 function Videos({ videos }) {
@@ -10,14 +9,7 @@ function Videos({ videos }) {
     useEffect(() => {
         setResults({ ...videos })
     }, [videos])
-    const opts = {
-        height: '390',
-        width: '640',
-        playerVars: {
-          // https://developers.google.com/youtube/player_parameters
-          autoplay: 0,
-        },
-      };
+
     return (
         <div className='container'>
             {
@@ -32,16 +24,23 @@ function Videos({ videos }) {
                 results.hasOwnProperty('response') && (
                     <div className='row'>
                         {results['response'].map((item, i) => {
-                            return <div key={i} className="col-lg-6 col-md-12">
-                                <div className='grid-element'>
-                                <YouTube id={generateId()} opts={opts} onReady={YouTube.onReady} videoId={item['id']['videoId']} />
+                            return <div className="col-lg-6 mb-4" key={i}>
+                                <div className="card">
+                                    <img src={item['snippet']['thumbnails']['medium']['url']} className="card-img-top" alt={item['etag']} />
+                                    <div className="card-body">
+                                        <h5 className="card-title">
+                                            <NavLink
+                                                to={`/videos/${item['id']['videoId']}`}
+                                                className={''}
+                                            >{item['snippet']['title']}</NavLink>
+                                        </h5>
+                                    </div>
                                 </div>
-                                </div>
+                            </div>
                         })}
                     </div>
                 )
             }
-
         </div>
     )
 }
