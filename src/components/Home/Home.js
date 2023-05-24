@@ -26,7 +26,8 @@ function Home() {
         if (search === '') return
         try {
             const response = await fetch(
-                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY}`
+                //`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY}`
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY2}`
                 // `https://www.googleapis.com/youtube/v3/search?part=snpet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY}`
             );
 
@@ -86,7 +87,6 @@ function Home() {
                     </div>
                 )
             }
-
         </>
     )
 }
