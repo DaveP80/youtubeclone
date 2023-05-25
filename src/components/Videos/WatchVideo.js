@@ -2,10 +2,12 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
+import { FaTrash, FaEdit } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { collection, doc, getDoc, getDocs, addDoc, setDoc } from 'firebase/firestore'
 import { db } from '../../firebase-config'
 import { v1 as generateId } from 'uuid'
+import './videos.css'
 
 function WatchVideo() {
 
@@ -22,15 +24,24 @@ function WatchVideo() {
     const [field, setField] = useState({})
     const [nocomm, setnoComm] = useState(false)
     const commCollection = collection(db, 'comments')
-    async function getComments() {
+    const [showEditForm, setShowEditForm] = useState(null);
+    const [editedComment, setEditedComment] = useState('');
+    const [hash, setHash] = useState('');
+
+    async function getComments(args) {
 
         try {
             const data = await getDoc(doc(db, 'comments', id))
             setField(data.data())
-            setComments(commentList([...comments, ...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
+            setComments(commentList([...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
 
         } catch {
-            setnoComm(!nocomm)
+            if (args) {
+                alert('failed to connect to storage')
+                setEditedComment('')
+                setHash('')
+                setShowEditForm(null)
+            } else setnoComm(!nocomm)
         }
     }
     useEffect(() => {
@@ -53,6 +64,8 @@ function WatchVideo() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name || !comment) return
+        //prevent duplicate name,comment in the firestore document
+        if (Object.values(field).map((item) => { return [item.name, item.comment] }).some(item => item[0] === name.trim() && item[1] === comment.trim())) { return }
 
         let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
         await setDoc(doc(commCollection, id), { ...field, ...newfield })
@@ -63,6 +76,39 @@ function WatchVideo() {
         setName('');
         setComment('');
     };
+
+    function handleDelete(args) {
+        return
+    }
+
+    function handleUpdate(args) {
+
+        if (showEditForm === args) {
+            setEditedComment('')
+            setComment('')
+            setHash('')
+            setShowEditForm(null)
+        }
+        else setShowEditForm(args)
+    }
+    //function to handle editing comments under the video
+    const handleEdit = async (e, args, argsC) => {
+        e.preventDefault()
+        if (Object.keys(field).includes(hash)) {
+            if (argsC === editedComment.trim()) return
+            let editField = { [hash]: { name: args, comment: editedComment.trim() } }
+            await setDoc(doc(commCollection, id), { ...field, ...editField })
+            getComments(true)
+            setEditedComment('')
+            setHash('')
+            setShowEditForm(null)
+        } else {
+            alert('wrong passcode')
+            setHash('')
+            setEditedComment('')
+            return
+        }
+    }
     return (
         <>
             <div className='mb-2'>
@@ -74,7 +120,6 @@ function WatchVideo() {
             <div className="container">
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-
                         <input
                             type="text"
                             className="form-control"
@@ -105,13 +150,48 @@ function WatchVideo() {
                                 <div className="card-body">
                                     <h5 className="card-title">{comment[0]} 🗣️says</h5>
                                     <p className="card-text">{comment[1]}</p>
+                                    <FaTrash
+                                        onClick={() => handleDelete(index)}
+                                        className="icon delete-icon"
+                                    />
+                                    <FaEdit
+                                        onClick={() => handleUpdate(index)}
+                                        className="icon edit-icon"
+                                    />
+                                    {showEditForm === index ? (
+                                        <form onSubmit={(e) => handleEdit(e, comment[0], comment[1])}>
+                                            <div className="form-group">
+                                                <label htmlFor="editComment">Edit Comment</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control mb-1"
+                                                    id="hashcode"
+                                                    value={hash}
+                                                    onChange={(e) => setHash(e.target.value)}
+                                                    placeholder='passcode'
+                                                />
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="editComment"
+                                                    value={editedComment}
+                                                    onChange={(e) => setEditedComment(e.target.value)}
+                                                    placeholder='updated comment'
+                                                    required
+                                                />
+                                            </div>
+                                            <button type="submit" className="btn btn-primary">
+                                                Update
+                                            </button>
+                                        </form>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
                         )}
                         {
                             nocomm && <div className="alert alert-primary" role="alert">
-                                No Search Results Yet!, Please submit a search above!
+                                Be the First to Comment on this video!
                             </div>
                         }
                     </div>
