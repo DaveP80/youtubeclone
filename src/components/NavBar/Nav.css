@@ -1,55 +1,7 @@
-header {
-    align-items: center;
-    background: red;
+#headernav {
+    background: rgb(242, 139, 139);
     border-bottom: 3px solid white;
-    display: flex;
     padding: 25px 15% 35px;
-  }
-  
-  header article,
-  header aside {
-    width: 50%;
-  }
-  
-  header h1 {
-    height: auto;
-    margin: 0;
-    font-size: 36px;
-  }
-  
-  header h1 span {
-    font-size: 24px;
-    font-weight: 300;
-  }
-  
-  header h1 a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  header ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  header ul li {
-    display: inline-block;
-    font-family: var(--font-zen);
-    font-size: 18px;
-    padding: 0 25px;
-  }
-  
-  header ul li a {
-    color: var(--white);
-    border-bottom: 2px solid white;
-    font-weight: 500;
-    padding-bottom: 5px;
-    text-decoration: none;
-  }
-  
-  header ul li a:hover {
-    color: black;
-    border-bottom: 2px solid black;
   }
   
   .active-link {

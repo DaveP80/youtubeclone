@@ -4,4 +4,15 @@
     margin-bottom: 1em;
     overflow: scroll;
 }
-  
+
+@media (max-width: 400px) {
+    .card-img-top {
+        height: 200px;
+      }
+
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 400px;
+  }
