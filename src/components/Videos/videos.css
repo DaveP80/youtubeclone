@@ -16,3 +16,16 @@
     object-fit: cover;
     height: 400px;
   }
+
+  .icon {
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  .delete-icon {
+    color: red;
+  }
+  
+  .edit-icon {
+    color: blue;
+  }  
