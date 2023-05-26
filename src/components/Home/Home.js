@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useState } from 'react'
 import Videos from '../Videos/Videos'
 import { useParams } from 'react-router-dom'
+import { FaTimes } from 'react-icons/fa';
 
 function Home() {
 
@@ -9,25 +10,24 @@ function Home() {
 
     const [search, setSearch] = useState('')
     const [videos, setVideos] = useState({})
-    const [newS, setNewS] = useState(home)
     const [modal, setModal] = useState(true)
     const [error, setError] = useState(false)
 
     useEffect(() => {
-        if (newS === 'home') {
+        if (home === 'home') {
             if (localStorage.getItem('response') !== null) {
                 setVideos({ response: JSON.parse(localStorage.getItem('response')) })
             }
         };
-    }, [newS])
+    }, [home])
 
     async function handleSubmit(e) {
         e.preventDefault()
         if (search === '') return
         try {
             const response = await fetch(
-                //`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY}`
-                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY2}`
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY}`
+                // `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search.trim()}&key=${process.env.REACT_APP_API_KEY2}`
             );
 
             if (!response.ok) {
@@ -77,8 +77,8 @@ function Home() {
                                     <p>Search Api is Down</p>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-primary" onClick={closeModal}>
-                                        Close
+                                    <button type="button" className="close" onClick={closeModal}>
+                                    <FaTimes />
                                     </button>
                                 </div>
                             </div>

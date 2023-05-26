@@ -2,9 +2,9 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaCopy } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { collection, doc, getDoc, getDocs, addDoc, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../../firebase-config'
 import { v1 as generateId } from 'uuid'
 import './videos.css'
@@ -20,10 +20,10 @@ function WatchVideo() {
             autoplay: 0,
         }
     };
+    const commCollection = collection(db, 'comments')
     const [comments, setComments] = useState([])
     const [field, setField] = useState({})
     const [nocomm, setnoComm] = useState(false)
-    const commCollection = collection(db, 'comments')
     const [showEditForm, setShowEditForm] = useState(null);
     const [showDelete, setShowDelete] = useState(null)
     const [editedComment, setEditedComment] = useState('');
@@ -32,14 +32,13 @@ function WatchVideo() {
     const [verify, setVerify] = useState(null)
     const [newField, setNewField] = useState(null)
 
-    async function getComments(args) {
-
+    const getComments = async (args) => {
         try {
             const data = await getDoc(doc(db, 'comments', id))
             setField(data.data())
             setComments(commentList([...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
 
-        } catch {
+        } catch (e) {
             if (args) {
                 alert('failed to connect to storage')
                 setEditedComment('')
@@ -47,15 +46,22 @@ function WatchVideo() {
                 setDHash('')
                 setShowDelete(null)
                 setShowEditForm(null)
-            } else setnoComm(!nocomm)
+            }
+            console.log(e)
         }
     }
+    // eslint-disable-next-line
     useEffect(() => {
-        getComments()
+        getComments();
     }, [])
+
+    useEffect(() => {
+        if (checkfieldObj(field)) setnoComm(true)
+    }, [field])
+
     const [name, setName] = useState('');
     const [comment, setComment] = useState('');
-
+    //remove possible duplicate fields from firestore
     function commentList(arr) {
         return arr.filter((subArray, index, self) => {
             return !self.slice(index + 1).some((otherSubArray) => {
@@ -66,27 +72,44 @@ function WatchVideo() {
             });
         })
     }
+    //build a field entry for the firebase collection
+    async function commentsList() {
+        let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
+        await setDoc(doc(commCollection, id), { ...field, ...newfield })
+        setNewField(newfield)
+        setVerify(true)
+        setField({ ...field, ...newfield })
+        setComments(commentList([...comments, [name.trim(), comment.trim()]]))
+        setnoComm(false)
+
+        setName('');
+        setComment('');
+    }
+
+    function checkfieldObj(args) {
+        let isEmpty = true;
+
+        for (const key in args) {
+            if (args.hasOwnProperty(key)) {
+                isEmpty = false;
+                break;
+            }
+        }
+        return isEmpty
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name || !comment) return
         //prevent duplicate name,comment in the firestore document
-        if (Object.values(field).map((item) => { return [item.name, item.comment] }).some(item => item[0] === name.trim() && item[1] === comment.trim())) { 
-            return 
+        if (checkfieldObj(field)) {
+            commentsList()
+            return
+        } else if (Object.values(field).map((item) => { return [item.name, item.comment] }).some(item => item[0] === name.trim() && item[1] === comment.trim())) {
+            return
         } else {
-            let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
-            await setDoc(doc(commCollection, id), { ...field, ...newfield })
-            setNewField(newfield)
-            setVerify(true)
-            setField({ ...field, ...newfield })
-            setComments(commentList([...comments, [name.trim(), comment.trim()]]))
-            setnoComm(false)
-    
-            setName('');
-            setComment('');
-
+            commentsList()
         }
-
     };
 
     function handleDelete(args) {
@@ -146,6 +169,12 @@ function WatchVideo() {
         setNewField(null)
     };
 
+    const copyToClipboard = () => {
+        let c = document.getElementById('keycode')
+        navigator.clipboard.writeText(c.textContent)
+        closeModal()
+    }
+
     return (
         <>
             <div className='mb-2'>
@@ -191,8 +220,11 @@ function WatchVideo() {
                                                 <h5 className="modal-title">Thanks for commenting</h5>
                                             </div>
                                             <div className="modal-body">
-                                                <p>Your code to edit/delete: {Object.keys(newField)[0]}</p>
+                                                <p>Your code to edit/delete: <span id='keycode'>{Object.keys(newField)[0]}</span></p>
                                             </div>
+                                            <button type="button" className="btn btn-link" onClick={copyToClipboard}>
+                                                <FaCopy />
+                                            </button>
                                             <div className="modal-footer">
                                                 <button type="button" className="btn btn-primary" onClick={closeModal}>
                                                     Close
