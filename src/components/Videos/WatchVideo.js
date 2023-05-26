@@ -25,8 +25,12 @@ function WatchVideo() {
     const [nocomm, setnoComm] = useState(false)
     const commCollection = collection(db, 'comments')
     const [showEditForm, setShowEditForm] = useState(null);
+    const [showDelete, setShowDelete] = useState(null)
     const [editedComment, setEditedComment] = useState('');
     const [hash, setHash] = useState('');
+    const [d_hash, setDHash] = useState('');
+    const [verify, setVerify] = useState(null)
+    const [newField, setNewField] = useState(null)
 
     async function getComments(args) {
 
@@ -40,6 +44,8 @@ function WatchVideo() {
                 alert('failed to connect to storage')
                 setEditedComment('')
                 setHash('')
+                setDHash('')
+                setShowDelete(null)
                 setShowEditForm(null)
             } else setnoComm(!nocomm)
         }
@@ -65,20 +71,30 @@ function WatchVideo() {
         e.preventDefault();
         if (!name || !comment) return
         //prevent duplicate name,comment in the firestore document
-        if (Object.values(field).map((item) => { return [item.name, item.comment] }).some(item => item[0] === name.trim() && item[1] === comment.trim())) { return }
+        if (Object.values(field).map((item) => { return [item.name, item.comment] }).some(item => item[0] === name.trim() && item[1] === comment.trim())) { 
+            return 
+        } else {
+            let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
+            await setDoc(doc(commCollection, id), { ...field, ...newfield })
+            setNewField(newfield)
+            setVerify(true)
+            setField({ ...field, ...newfield })
+            setComments(commentList([...comments, [name.trim(), comment.trim()]]))
+            setnoComm(false)
+    
+            setName('');
+            setComment('');
 
-        let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
-        await setDoc(doc(commCollection, id), { ...field, ...newfield })
-        setField({ ...field, ...newfield })
-        setComments(commentList([...comments, [name.trim(), comment.trim()]]))
-        setnoComm(false)
+        }
 
-        setName('');
-        setComment('');
     };
 
     function handleDelete(args) {
-        return
+        if (showDelete === args) {
+            setDHash('')
+            setShowDelete(null)
+        }
+        else setShowDelete(args)
     }
 
     function handleUpdate(args) {
@@ -94,7 +110,7 @@ function WatchVideo() {
     //function to handle editing comments under the video
     const handleEdit = async (e, args, argsC) => {
         e.preventDefault()
-        if (Object.keys(field).includes(hash)) {
+        if (field.hasOwnProperty(hash) && field[hash].name === args && field[hash].comment === argsC) {
             if (argsC === editedComment.trim()) return
             let editField = { [hash]: { name: args, comment: editedComment.trim() } }
             await setDoc(doc(commCollection, id), { ...field, ...editField })
@@ -109,6 +125,27 @@ function WatchVideo() {
             return
         }
     }
+
+    const handleRemoveComm = async (e, args, argsD) => {
+        e.preventDefault()
+        if (field.hasOwnProperty(d_hash) && field[d_hash].name === args && field[d_hash].comment === argsD) {
+            let obj = { ...field }
+            delete obj[d_hash]
+            await setDoc(doc(commCollection, id), { ...obj })
+            getComments(true)
+            setDHash('')
+            setShowDelete(null)
+        } else {
+            alert('incorrect code')
+            setDHash('')
+        }
+    }
+
+    const closeModal = () => {
+        setVerify(false);
+        setNewField(null)
+    };
+
     return (
         <>
             <div className='mb-2'>
@@ -145,6 +182,27 @@ function WatchVideo() {
                 </form>
                 <div className="container">
                     <div className="row">
+                        {
+                            verify && (
+                                <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                                    <div className="modal-dialog" role="document">
+                                        <div className="modal-content">
+                                            <div className="modal-header">
+                                                <h5 className="modal-title">Thanks for commenting</h5>
+                                            </div>
+                                            <div className="modal-body">
+                                                <p>Your code to edit/delete: {Object.keys(newField)[0]}</p>
+                                            </div>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-primary" onClick={closeModal}>
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
                         {comments.length > 0 && comments.map((comment, index) => <div className="col-md-4" key={index}>
                             <div className="card mb-3">
                                 <div className="card-body">
@@ -182,6 +240,23 @@ function WatchVideo() {
                                             </div>
                                             <button type="submit" className="btn btn-primary">
                                                 Update
+                                            </button>
+                                        </form>
+                                    ) : null}
+                                    {showDelete === index ? (
+                                        <form onSubmit={(e) => handleRemoveComm(e, comment[0], comment[1])}>
+                                            <div className="form-group">
+                                                <input
+                                                    type="text"
+                                                    className="form-control mb-1"
+                                                    id="d_hashcode"
+                                                    value={d_hash}
+                                                    onChange={(e) => setDHash(e.target.value)}
+                                                    placeholder='passcode'
+                                                />
+                                            </div>
+                                            <button type="submit" className="btn btn-primary">
+                                                Delete
                                             </button>
                                         </form>
                                     ) : null}
