@@ -18,7 +18,6 @@ function Videos({ videos }) {
                         No Search Results Yet!, Please submit a search above!
                     </div>
                 )
-
             }
             {
                 results.hasOwnProperty('response') && (
