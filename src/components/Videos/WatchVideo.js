@@ -23,7 +23,7 @@ function WatchVideo() {
     const commCollection = collection(db, 'comments')
     const [comments, setComments] = useState([])
     const [field, setField] = useState({})
-    const [nocomm, setnoComm] = useState(false)
+    const [nocomm, setnoComm] = useState(null)
     const [showEditForm, setShowEditForm] = useState(null);
     const [showDelete, setShowDelete] = useState(null)
     const [editedComment, setEditedComment] = useState('');
@@ -56,7 +56,9 @@ function WatchVideo() {
     }, [])
 
     useEffect(() => {
-        if (checkfieldObj(field)) setnoComm(true)
+        let checkBoolean = checkfieldObj(field)
+        if (checkBoolean) setnoComm(true)
+        else setnoComm(false)
     }, [field])
 
     const [name, setName] = useState('');
@@ -80,8 +82,6 @@ function WatchVideo() {
         setVerify(true)
         setField({ ...field, ...newfield })
         setComments(commentList([...comments, [name.trim(), comment.trim()]]))
-        setnoComm(false)
-
         setName('');
         setComment('');
     }
@@ -95,7 +95,8 @@ function WatchVideo() {
                 break;
             }
         }
-        return isEmpty
+        if (isEmpty) return true
+        else return false
     }
 
     const handleSubmit = async (e) => {
