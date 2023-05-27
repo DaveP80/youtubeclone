@@ -12,9 +12,11 @@ import './videos.css'
 function WatchVideo() {
 
     const { id } = useParams()
+    const isSmallScreen = window.innerWidth < 500;
+    const isMedScreen = window.innerWidth < 640 && window.innerWidth >= 500;
     const opts = {
-        height: '390',
-        width: '640',
+        height: isSmallScreen ? '244' : isMedScreen ? '305' : '390',
+        width: isSmallScreen ? '400' : isMedScreen ? '500' : '640',
         playerVars: {
             // https://developers.google.com/youtube/player_parameters
             autoplay: 0,
