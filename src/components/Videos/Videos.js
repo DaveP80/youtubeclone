@@ -22,7 +22,15 @@ function Videos({ videos }) {
             {
                 results.hasOwnProperty('response') && (
                     <div className='row'>
-                        {results['response'].map((item, i) => {
+                        {results.page &&
+
+                            <NavLink
+                                to={`/page1`}
+                                className={''}
+                            >First Page</NavLink>
+
+                        }
+                        {results['response'].filter(item => item['id'].hasOwnProperty('videoId')).map((item, i) => {
                             return <div className="col-lg-6 mb-4" key={i}>
                                 <div className="card">
                                     <img src={item['snippet']['thumbnails']['medium']['url']} className="card-img-top" alt={item['etag']} />
@@ -37,6 +45,10 @@ function Videos({ videos }) {
                                 </div>
                             </div>
                         })}
+                        <NavLink
+                            to={`/${results.nextPageToken}`}
+                            className={''}
+                        >Next Page</NavLink>
                     </div>
                 )
             }
