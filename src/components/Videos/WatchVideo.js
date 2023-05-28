@@ -23,6 +23,7 @@ function WatchVideo() {
         }
     };
     const commCollection = collection(db, 'comments')
+    const countCollection = collection(db, 'count')
     const [comments, setComments] = useState([])
     const [field, setField] = useState({})
     const [nocomm, setnoComm] = useState(null)
@@ -34,14 +35,30 @@ function WatchVideo() {
     const [verify, setVerify] = useState(null)
     const [newField, setNewField] = useState(null)
 
+
+    const [count, setCount] = useState(null)
+    //this function handles video comment information and view count information
     const getComments = async (args) => {
         try {
-            const data = await getDoc(doc(db, 'comments', id))
-            setField(data.data())
-            setComments(commentList([...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
+            if (args === null) {
+                const data = await getDoc(doc(db, 'comments', id))
+                setField(data.data())
+                setComments(commentList([...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
+            }
+            if (args === 'count') {
+                const cdata = await getDoc(doc(db, 'count', id))
+                try {
+                    let num = cdata.data()['count'] + 1
+                    setDoc(doc(countCollection, id), { count: num })
+                    setCount(num)
+                } catch (e) {
+                    await setDoc(doc(countCollection, id), { count: 1 })
+                    setCount(1)
+                }
+            }
 
         } catch (e) {
-            if (args) {
+            if (args === true) {
                 alert('failed to connect to storage')
                 setEditedComment('')
                 setHash('')
@@ -55,6 +72,11 @@ function WatchVideo() {
     // eslint-disable-next-line
     useEffect(() => {
         getComments();
+    }, [])
+
+    // eslint-disable-next-line
+    useEffect(() => {
+        getComments('count');
     }, [])
 
     useEffect(() => {
@@ -76,6 +98,7 @@ function WatchVideo() {
             });
         })
     }
+
     //build a field entry for the firebase collection
     async function commentsList() {
         let newfield = { [generateId()]: { name: name.trim(), comment: comment.trim() } }
@@ -186,6 +209,10 @@ function WatchVideo() {
                 </Link>
             </div>
             <YouTube opts={opts} onReady={YouTube.onReady} videoId={id} />
+            {count && <aside>
+                <h3>view count: {count}</h3>
+            </aside>
+            }
             <div className="container">
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
