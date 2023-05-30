@@ -4,35 +4,44 @@ import './Nav.css'
 
 function NavBar() {
   return (
-    <header>
-      <article>
-        <h1>
-          <Link to="/">
-            Youtube
-          </Link>
-        </h1>
-      </article>
-      <aside>
-        <ul>
-          <li>
+    <div id='headernav' className="container">
+      <header>
+        <div className="row">
+          <div className="col">
+            <h1>
+              <Link to="/" className='text-decoration-none'>
+                Youtube
+              </Link>
+            </h1>
+          </div>
+        </div>
+      </header>
+      <div className="row">
+        <div className="col d-flex justify-content-between custom-bg">
+          <div>
             <NavLink
               to="/home"
               className={({ isActive }) => (isActive ? "active-link" : "")}
             >
               Home
             </NavLink>
-          </li>
-          <li>
+
+          </div>
+
+          <div>
             <NavLink
               to="/About"
               className={({ isActive }) => (isActive ? "active-link" : "")}
             >
               About
             </NavLink>
-          </li>
-        </ul>
-      </aside>
-    </header>
+
+
+          </div>
+
+        </div>
+      </div>
+    </div>
   )
 }
 

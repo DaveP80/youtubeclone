@@ -1,7 +1,24 @@
-.grid-element {
-    padding: 0.5em;
-    border: 1px solid #ccc;
-    margin-bottom: 1em;
-    overflow: scroll;
-}
+@media (max-width: 400px) {
+    .card-img-top {
+        height: 200px;
+      }
+
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 400px;
+  }
+
+  .icon {
+    cursor: pointer;
+    margin-left: 5px;
+  }
   
+  .delete-icon {
+    color: red;
+  }
+  
+  .edit-icon {
+    color: blue;
+  }  
