@@ -28,7 +28,9 @@ function About() {
               JavaScript, HTML, CSS, Java, Python, SQL, AWS, and GCP. Other
               Interests: - College sports. - Reading novels.
             </span>
+
             <a href="https://github.com/DaveP80">GitHub</a>
+
           </p>
         </div>
 
@@ -52,6 +54,7 @@ function About() {
               fellowship. He had some some coding experience JavaScript, HTML,
               CSS and React.
             </span>
+
             <a href="https://github.com/Lumbarudi24">GitHub</a>
           </p>
         </div>
