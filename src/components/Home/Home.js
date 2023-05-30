@@ -37,8 +37,10 @@ function Home() {
     async function getVideoData(args, argsN) {
         try {
             const response = await fetch(
+
                 `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search ? search.trim() : args}&safeSearch=${safeSearch}&key=${process.env.REACT_APP_API_KEY}&pageToken=${argsN || ''}`
                 //`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${search ? search.trim() : args}&safeSearch=${safeSearch}&key=${process.env.REACT_APP_API_KEY2}&pageToken=${argsN || ''}`
+
             );
 
             if (!response.ok) {
