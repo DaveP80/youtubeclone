@@ -34,8 +34,6 @@ function WatchVideo() {
     const [d_hash, setDHash] = useState('');
     const [verify, setVerify] = useState(null)
     const [newField, setNewField] = useState(null)
-
-
     const [count, setCount] = useState(null)
     //this function handles video comment information and view count information
     const getComments = async (args) => {
@@ -210,7 +208,7 @@ function WatchVideo() {
             </div>
             <YouTube opts={opts} onReady={YouTube.onReady} videoId={id} />
             {count && <aside>
-                <h3>view count: {count}</h3>
+                <h3>view count <span className="badge bg-secondary">{count}</span></h3>
             </aside>
             }
             <div className="container">
