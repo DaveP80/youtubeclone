@@ -36,9 +36,9 @@ function WatchVideo() {
     const [newField, setNewField] = useState(null)
     const [count, setCount] = useState(null)
     //this function handles video comment information and view count information
-    const getComments = async (args) => {
+    const getComments = async (args, args2) => {
         try {
-            if (args === null) {
+            if (args === 'comments' || args2 === true) {
                 const data = await getDoc(doc(db, 'comments', id))
                 setField(data.data())
                 setComments(commentList([...Object.values(data.data()).map((item) => { return [item.name, item.comment] })]))
@@ -56,7 +56,7 @@ function WatchVideo() {
             }
 
         } catch (e) {
-            if (args === true) {
+            if (args2 === true) {
                 alert('failed to connect to storage')
                 setEditedComment('')
                 setHash('')
@@ -67,14 +67,10 @@ function WatchVideo() {
             console.log(e)
         }
     }
-    // eslint-disable-next-line
-    useEffect(() => {
-        getComments();
-    }, [])
 
-    // eslint-disable-next-line
     useEffect(() => {
         getComments('count');
+        getComments('comments');
     }, [])
 
     useEffect(() => {
@@ -161,7 +157,7 @@ function WatchVideo() {
             if (argsC === editedComment.trim()) return
             let editField = { [hash]: { name: args, comment: editedComment.trim() } }
             await setDoc(doc(commCollection, id), { ...field, ...editField })
-            getComments(true)
+            getComments('comments', true)
             setEditedComment('')
             setHash('')
             setShowEditForm(null)
@@ -179,7 +175,7 @@ function WatchVideo() {
             let obj = { ...field }
             delete obj[d_hash]
             await setDoc(doc(commCollection, id), { ...obj })
-            getComments(true)
+            getComments('comments', true)
             setDHash('')
             setShowDelete(null)
         } else {
