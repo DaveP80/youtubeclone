@@ -9,8 +9,8 @@ function About() {
         <h1>About Us</h1>
       </div>
 
-      <div>
-        <div className="image-container ">
+      <div className='container'>
+        <div className="image-container">
           <img
             src={"./images/DaveP.jpg"}
             alt="DavePicture "
@@ -23,8 +23,8 @@ function About() {
             <h3>Dave Paquette</h3>
             <span className="container">
               Dave is a front-end and back-end developer in the middle of a
-              fellowship that is React JS focused. He also had some graet
-              experience in some coding languages and frameworks likes:
+              fellowship that is React JS focused. He also had some great
+              experience in some coding languages and frameworks like:
               JavaScript, HTML, CSS, Java, Python, SQL, AWS, and GCP. Other
               Interests: - College sports. - Reading novels.
             </span>
@@ -49,7 +49,7 @@ function About() {
               Since computer was introduce to him in the 90's. He had never seen
               himself learning or working in the software industry. After trying
               to become an Computer and Technology engeneer without success, he
-              is the way to become a full-Stack developer with the Pursuit.org
+              is on the way to become a full-Stack developer with the Pursuit.org
               fellowship. He had some some coding experience JavaScript, HTML,
               CSS and React.
             </span>
@@ -59,7 +59,7 @@ function About() {
       </div>
     </>
   );
-  
+
 }
 
 export default About
