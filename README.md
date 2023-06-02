@@ -9,8 +9,14 @@ This is a JavaScript-based **YouTube clone** built using React. The application 
 
 ###  [netlify](https://courageous-strudel-428fa7.netlify.app)
 
+## Installation
+
+```bash
+  npm install youtubeclone
+  cd to the project
+```
     
-## Run Locally and Install
+## Run Locally
 
 Clone the project
 
