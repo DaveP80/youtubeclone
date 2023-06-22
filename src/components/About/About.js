@@ -12,7 +12,7 @@ function About() {
       <div className='container'>
         <div className="image-container">
           <img
-            src={"./images/DaveP.jpg"}
+            src={"./images/DaveP.png"}
             alt="DavePicture "
             className="img-thumbnail"
             width="200"
